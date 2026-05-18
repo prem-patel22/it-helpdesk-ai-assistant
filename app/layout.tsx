@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Knowledge AI - Your Intelligent Assistant",
+  title: "IT Helpdesk AI | 24/7 Support Assistant",
   description: "AI-powered chat assistant with specialized knowledge",
   icons: {
     icon: "/favicon.ico",
