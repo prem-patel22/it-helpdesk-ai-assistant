@@ -9,7 +9,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-**Live Demo:** [Add your Vercel URL here after deployment]
+**Live Demo:** [it-helpdesk-ai-assistant.vercel.app]
 
 </div>
 
