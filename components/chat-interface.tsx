@@ -17,6 +17,8 @@ export function ChatInterface() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showTicketButton, setShowTicketButton] = useState(false);
+  const [lastQuestion, setLastQuestion] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fix hydration issues
@@ -32,16 +34,74 @@ export function ChatInterface() {
     scrollToBottom();
   }, [messages]);
 
+  const createTicket = () => {
+    window.location.href = `mailto:helpdesk@company.com?subject=IT Ticket: ${encodeURIComponent(lastQuestion)}&body=User asked: ${encodeURIComponent(lastQuestion)}%0A%0AAI couldn't answer this question.%0A%0APlease assist.%0A%0A---%0AAutomatically generated from IT Helpdesk AI`;
+  };
+
+  const escalateToHuman = () => {
+    if (confirm("Connect with a human IT support agent?\n\nYou will be connected to our IT team. This may take 1-2 minutes.")) {
+      window.location.href = "tel:+1234567890";
+    }
+  };
+
+  // Retry last message function
+  const retryLastMessage = async () => {
+    const lastUserMessage = messages.filter(m => m.role === "user").pop();
+    if (lastUserMessage) {
+      setInput(lastUserMessage.content);
+      // Small delay to ensure state updates
+      setTimeout(() => sendMessage(), 100);
+    }
+  };
+
+  // Fallback responses when API fails
+  const getFallbackResponse = (question: string): string => {
+    const q = question.toLowerCase();
+    
+    if (q.includes("password") || q.includes("reset")) {
+      return "🔐 **To reset your password:**\n\n1. Go to https://password.company-portal.com\n2. Click 'Forgot Password'\n3. Enter your Employee ID\n4. Check your email for reset link\n5. Create a new password (min 8 characters, 1 uppercase, 1 number)\n\nNeed more help? Contact IT helpdesk.";
+    }
+    
+    if (q.includes("vpn")) {
+      return "🌐 **VPN Troubleshooting:**\n\n1. Check your internet connection\n2. Restart Cisco AnyConnect\n3. Verify your username and password\n4. Check MFA code is correct\n5. If still issues, contact IT support.";
+    }
+    
+    if (q.includes("printer")) {
+      return "🖨️ **Printer Fix:**\n\n1. Make sure printer is turned ON\n2. Check paper tray has paper\n3. Restart Print Spooler:\n   - Press Windows + R\n   - Type: services.msc\n   - Find 'Print Spooler' → Restart\n4. Clear any stuck print jobs\n5. Restart your computer";
+    }
+    
+    if (q.includes("wifi") || q.includes("wi-fi")) {
+      return "📡 **WiFi Fix:**\n\n1. Click WiFi icon → Toggle OFF\n2. Wait 10 seconds → Toggle ON\n3. Forget network and reconnect\n4. Run network troubleshooter\n5. Restart your computer";
+    }
+    
+    if (q.includes("slow") || q.includes("performance") || q.includes("freeze")) {
+      return "🐌 **Speed up your PC:**\n\n1. Restart your computer (fixes most issues!)\n2. Close unused programs (Ctrl+Shift+Esc)\n3. Clear temp files:\n   - Press Windows + R\n   - Type: %temp%\n   - Delete all files\n4. Check for Windows updates\n5. Ensure enough disk space (10GB+ free)";
+    }
+    
+    if (q.includes("software") || q.includes("install") || q.includes("teams") || q.includes("office")) {
+      return "💻 **Software Installation:**\n\n1. Open Company Portal app\n2. Search for the software\n3. Click 'Install'\n4. Wait for completion\n5. Launch from Start menu\n\nTo request new software, submit a ticket to IT.";
+    }
+    
+    return "I can help with: passwords, VPN, printers, WiFi, software installation, and computer performance. What specific issue are you facing?";
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
     const userMessage = input.trim();
+    setLastQuestion(userMessage);
     setInput("");
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
     setIsLoading(true);
+    setShowTicketButton(false);
+
+    // Add timeout for the entire request (25 seconds)
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Request timeout")), 25000);
+    });
 
     try {
-      const response = await fetch("/api/chat", {
+      const fetchPromise = fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -49,24 +109,42 @@ export function ChatInterface() {
         }),
       });
 
+      const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
+      let aiResponse = data.reply;
+      
+      // If response is error message or too short, use fallback
+      if (!aiResponse || aiResponse.includes("error") || aiResponse.length < 10) {
+        aiResponse = getFallbackResponse(userMessage);
+      }
+      
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: data.reply },
+        { role: "assistant", content: aiResponse },
       ]);
+
+      if (
+        aiResponse.toLowerCase().includes("don't know") ||
+        aiResponse.toLowerCase().includes("doesn't have that information") ||
+        aiResponse.toLowerCase().includes("contact it helpdesk") ||
+        aiResponse.toLowerCase().includes("i don't have")
+      ) {
+        setShowTicketButton(true);
+      }
     } catch (error) {
       console.error("Chat error:", error);
+      // Use fallback response instead of generic error
+      const fallbackResponse = getFallbackResponse(userMessage);
       setMessages((prev) => [
         ...prev,
-        {
-          role: "assistant",
-          content: "❌ Sorry, I encountered an error. Please try again.",
-        },
+        { role: "assistant", content: fallbackResponse },
       ]);
+      setShowTicketButton(true);
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +166,6 @@ export function ChatInterface() {
     "Computer is slow",
   ];
 
-  // Don't render until mounted to avoid hydration mismatch
   if (!mounted) {
     return null;
   }
@@ -123,21 +200,33 @@ export function ChatInterface() {
       <div className="flex-1 overflow-y-auto p-4 relative z-10">
         <div className="max-w-4xl mx-auto space-y-4">
           {messages.map((message, idx) => (
-            <div
-              key={idx}
-              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}
-            >
+            <div key={idx}>
               <div
-                className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-4 shadow-lg ${
-                  message.role === "user"
-                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
-                    : "bg-white/10 backdrop-blur-sm border border-white/20 text-white"
-                }`}
+                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}
               >
-                <div className="whitespace-pre-wrap leading-relaxed">
-                  {message.content}
+                <div
+                  className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-4 shadow-lg ${
+                    message.role === "user"
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+                      : "bg-white/10 backdrop-blur-sm border border-white/20 text-white"
+                  }`}
+                >
+                  <div className="whitespace-pre-wrap leading-relaxed">
+                    {message.content}
+                  </div>
                 </div>
               </div>
+              {/* Retry button for error messages */}
+              {message.role === "assistant" && message.content.includes("Service is busy") && (
+                <div className="flex justify-start mt-1 ml-4">
+                  <button
+                    onClick={retryLastMessage}
+                    className="text-xs text-blue-400 hover:text-blue-300 transition"
+                  >
+                    🔄 Retry
+                  </button>
+                </div>
+              )}
             </div>
           ))}
           {isLoading && (
@@ -151,11 +240,37 @@ export function ChatInterface() {
               </div>
             </div>
           )}
+          
+          {/* Ticket Creation Button */}
+          {showTicketButton && (
+            <div className="flex justify-center animate-fade-in">
+              <div className="bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-xl p-4 max-w-md">
+                <p className="text-yellow-200 text-sm text-center mb-3">
+                  🤔 I couldn't answer this question. Would you like to create a ticket?
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={createTicket}
+                    className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2"
+                  >
+                    📧 Create IT Ticket
+                  </button>
+                  <button
+                    onClick={escalateToHuman}
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2"
+                  >
+                    🗣️ Talk to IT
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div ref={messagesEndRef} />
         </div>
       </div>
 
-      {/* Suggestions - Only show when few messages */}
+      {/* Suggestions */}
       {messages.length <= 2 && (
         <div className="relative z-10 px-4 py-3 bg-white/5 backdrop-blur-sm border-t border-white/10">
           <div className="max-w-4xl mx-auto">
@@ -212,7 +327,6 @@ export function ChatInterface() {
         </div>
       </div>
 
-      {/* Add animation styles */}
       <style jsx>{`
         @keyframes fade-in {
           from {
@@ -227,6 +341,15 @@ export function ChatInterface() {
         .animate-fade-in {
           animation: fade-in 0.3s ease-out;
         }
+        @keyframes bounce {
+          0%, 80%, 100% { transform: scale(0); }
+          40% { transform: scale(1); }
+        }
+        .animate-bounce {
+          animation: bounce 1.4s infinite ease-in-out;
+        }
+        .delay-100 { animation-delay: -0.32s; }
+        .delay-200 { animation-delay: -0.16s; }
       `}</style>
     </div>
   );
