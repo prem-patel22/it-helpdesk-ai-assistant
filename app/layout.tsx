@@ -8,6 +8,10 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "IT Helpdesk AI Assistant",
   description: "Automate 70% of L1 IT Support Tickets with AI",
+  icons: {
+    icon: "https://favicon.io/emoji-favicons/robot/favicon.ico",
+    shortcut: "https://favicon.io/emoji-favicons/robot/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -17,19 +21,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        {/* WORKING FAVICON - Tested and confirmed */}
-        <link 
-          rel="icon" 
-          type="image/x-icon" 
-          href="https://favicon.io/emoji-favicons/robot/favicon.ico"
-        />
-        <link 
-          rel="shortcut icon" 
-          type="image/x-icon" 
-          href="https://favicon.io/emoji-favicons/robot/favicon.ico"
-        />
-      </head>
       <body className={inter.className}>
         {children}
         <Analytics />
