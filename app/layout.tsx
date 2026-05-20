@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script"; // 1. Import the Script component
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "IT Helpdesk AI Assistant",
-  description: "Automate 70% of L1 IT Support Tickets with AI",
-  icons: {
-    icon: "https://favicon.io/emoji-favicons/robot/favicon.ico",
-    shortcut: "https://favicon.io/emoji-favicons/robot/favicon.ico",
-  },
+  description: "AI-powered helpdesk",
 };
 
 export default function RootLayout({
@@ -22,30 +18,29 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Apollo Tracking Script */}
-        <script
+        {/* 2. Add the Apollo Script component here */}
+        <Script
+          id="apollo-tracking"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               function initApollo(){
-                var n=Math.random().toString(36).substring(7);
-                var o=document.createElement("script");
+                var n=Math.random().toString(36).substring(7),
+                o=document.createElement("script");
                 o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n;
-                o.async=true;
-                o.defer=true;
+                o.async=!0;
+                o.defer=!0;
                 o.onload=function(){
                   window.trackingFunctions.onLoad({appId:"6a0d771b4031c90018bc595b"})
                 };
-                document.head.appendChild(o)
+                document.head.appendChild(o);
               }
               initApollo();
             `,
           }}
         />
       </head>
-      <body className={inter.className}>
-        {children}
-        <Analytics />
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
