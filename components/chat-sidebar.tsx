@@ -12,9 +12,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-/**
- * Chat session interface
- */
 export interface ChatSession {
   id: string;
   title: string;
@@ -34,11 +31,6 @@ interface ChatSidebarProps {
   onCollapse: () => void;
 }
 
-/**
- * ChatSidebar Component
- *
- * Sidebar for managing multiple chat sessions
- */
 export function ChatSidebar({
   sessions,
   activeSessionId,
@@ -55,26 +47,33 @@ export function ChatSidebar({
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
           onClick={onToggle}
+          aria-hidden
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static z-50 h-full bg-[#0a0f1a] border-r border-blue-900/20 flex flex-col transition-all duration-300 shrink-0 ${
-          isOpen ? "translate-x-0 w-60" : "-translate-x-full lg:translate-x-0"
-        } ${isCollapsed ? "lg:w-0 lg:border-0 lg:overflow-hidden" : "lg:w-60"}`}
+        className={`
+          fixed lg:static z-50 h-full
+          bg-slate-950 border-r border-slate-700/40
+          flex flex-col transition-all duration-300 shrink-0
+          ${isOpen ? "translate-x-0 w-60" : "-translate-x-full lg:translate-x-0"}
+          ${isCollapsed ? "lg:w-0 lg:border-0 lg:overflow-hidden" : "lg:w-60"}
+        `}
       >
-        {/* Sidebar Header */}
-        <div className="p-4 border-b border-blue-900/20 flex items-center justify-between min-w-[240px]">
-          <h2 className="text-sm font-semibold text-slate-300">Chat History</h2>
+        {/* Header */}
+        <div className="px-4 py-3 border-b border-slate-700/40 flex items-center justify-between min-w-[240px]">
+          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            Chat History
+          </h2>
           <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="icon"
               onClick={onCollapse}
-              className="hidden lg:flex h-8 w-8 text-slate-400 hover:text-white"
+              className="hidden lg:flex h-7 w-7 text-slate-500 hover:text-slate-200 hover:bg-slate-800"
               title={isCollapsed ? "Show sidebar" : "Hide sidebar"}
             >
               {isCollapsed ? (
@@ -87,7 +86,8 @@ export function ChatSidebar({
               variant="ghost"
               size="icon"
               onClick={onToggle}
-              className="lg:hidden h-8 w-8 text-slate-400 hover:text-white"
+              className="lg:hidden h-7 w-7 text-slate-500 hover:text-slate-200 hover:bg-slate-800"
+              aria-label="Close sidebar"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -98,7 +98,7 @@ export function ChatSidebar({
         <div className="p-3 min-w-[240px]">
           <Button
             onClick={onNewChat}
-            className="w-full justify-start gap-2 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 hover:from-blue-600/30 hover:to-indigo-600/30 border border-blue-700/30 text-blue-300"
+            className="w-full justify-start gap-2 bg-teal-600/15 hover:bg-teal-600/25 border border-teal-500/25 text-teal-300 hover:text-teal-200 transition-colors"
           >
             <Plus className="h-4 w-4" />
             New Chat
@@ -106,30 +106,38 @@ export function ChatSidebar({
         </div>
 
         {/* Sessions List */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        <div className="flex-1 overflow-y-auto px-2 pb-3 space-y-0.5">
           {sessions.length === 0 ? (
-            <p className="text-xs text-slate-500 text-center py-8">
+            <p className="text-xs text-slate-600 text-center py-10">
               No chat history yet
             </p>
           ) : (
             sessions.map((session) => (
               <div
                 key={session.id}
-                className={`group flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-all ${
-                  activeSessionId === session.id
-                    ? "bg-blue-600/30 border border-blue-500/40"
-                    : "hover:bg-slate-700/50 bg-slate-800/30"
-                }`}
+                role="button"
+                tabIndex={0}
                 onClick={() => onSelectSession(session.id)}
+                onKeyDown={(e) => e.key === "Enter" && onSelectSession(session.id)}
+                className={`
+                  group flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-colors
+                  ${
+                    activeSessionId === session.id
+                      ? "bg-teal-600/20 border border-teal-500/30 text-white"
+                      : "hover:bg-slate-800/60 text-slate-300"
+                  }
+                `}
               >
-                <MessageSquare className="h-4 w-4 text-blue-400 shrink-0" />
+                <MessageSquare
+                  className={`h-3.5 w-3.5 shrink-0 ${
+                    activeSessionId === session.id ? "text-teal-400" : "text-slate-500"
+                  }`}
+                />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white font-medium truncate">
-                    {session.title && session.title.trim()
-                      ? session.title
-                      : "New Chat"}
+                  <p className="text-sm font-medium truncate leading-tight">
+                    {session.title?.trim() || "New Chat"}
                   </p>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-500 mt-0.5">
                     {session.updatedAt
                       ? new Date(session.updatedAt).toLocaleDateString()
                       : "Today"}
@@ -142,7 +150,8 @@ export function ChatSidebar({
                     e.stopPropagation();
                     onDeleteSession(session.id);
                   }}
-                  className="h-7 w-7 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-400 hover:bg-red-900/20 shrink-0"
+                  className="h-6 w-6 opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 hover:bg-red-900/20 shrink-0 transition-all"
+                  aria-label="Delete session"
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
@@ -153,16 +162,17 @@ export function ChatSidebar({
       </aside>
 
       {/* Mobile Menu Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onToggle}
-        className={`fixed top-4 left-4 z-30 lg:hidden h-10 w-10 bg-slate-800/80 backdrop-blur-sm border border-blue-900/20 ${
-          isOpen ? "hidden" : ""
-        }`}
-      >
-        <Menu className="h-5 w-5 text-slate-300" />
-      </Button>
+      {!isOpen && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggle}
+          aria-label="Open sidebar"
+          className="fixed top-4 left-4 z-30 lg:hidden h-9 w-9 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 text-slate-300 hover:text-white"
+        >
+          <Menu className="h-4 w-4" />
+        </Button>
+      )}
     </>
   );
 }
