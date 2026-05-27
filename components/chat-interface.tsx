@@ -18,7 +18,6 @@ export function ChatInterface() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [showTicketButton, setShowTicketButton] = useState(false);
   const [lastQuestion, setLastQuestion] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -89,7 +88,6 @@ export function ChatInterface() {
       setInput("");
       setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
       setIsLoading(true);
-      setShowTicketButton(false);
 
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("Request timeout")), 25000)
@@ -125,23 +123,12 @@ export function ChatInterface() {
           ...prev,
           { role: "assistant", content: aiResponse },
         ]);
-
-        const lower = aiResponse.toLowerCase();
-        if (
-          lower.includes("don't know") ||
-          lower.includes("doesn't have that information") ||
-          lower.includes("contact it helpdesk") ||
-          lower.includes("i don't have")
-        ) {
-          setShowTicketButton(true);
-        }
       } catch {
         const fallback = getFallbackResponse(userMessage);
         setMessages((prev) => [
           ...prev,
           { role: "assistant", content: fallback },
         ]);
-        setShowTicketButton(true);
       } finally {
         setIsLoading(false);
         inputRef.current?.focus();
@@ -176,7 +163,7 @@ export function ChatInterface() {
         <div className="absolute bottom-0 -left-32 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Header */}
+      {/* Header with Ticket/IT buttons moved here */}
       <header className="relative z-10 px-6 py-4 bg-slate-900/90 backdrop-blur-sm border-b border-slate-700/50">
         <div className="max-w-4xl mx-auto flex items-center gap-3">
           <div
@@ -193,9 +180,27 @@ export function ChatInterface() {
               24/7 Support · Instant Answers · Enterprise Grade
             </p>
           </div>
-          <div className="ml-auto flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" aria-hidden />
-            <span className="text-xs text-teal-400 font-medium">Online</span>
+          <div className="ml-auto flex items-center gap-3">
+            {/* Support Buttons - Always visible */}
+            <button
+              onClick={createTicket}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/30 rounded-lg text-amber-300 text-xs font-medium transition-colors"
+              title="Create IT Ticket"
+            >
+              📧 Create Ticket
+            </button>
+            <button
+              onClick={escalateToHuman}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 rounded-lg text-teal-300 text-xs font-medium transition-colors"
+              title="Talk to IT"
+            >
+              🗣️ Talk to IT
+            </button>
+            {/* Online status */}
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" aria-hidden />
+              <span className="text-xs text-teal-400 font-medium">Online</span>
+            </div>
           </div>
         </div>
       </header>
@@ -253,31 +258,6 @@ export function ChatInterface() {
             </div>
           )}
 
-          {/* Ticket / escalation prompt */}
-          {showTicketButton && (
-            <div className="flex justify-center">
-              <div className="bg-amber-500/10 border border-amber-500/25 rounded-xl p-4 max-w-sm text-center">
-                <p className="text-amber-300 text-sm mb-3">
-                  🤔 Couldn't resolve this automatically. Would you like help from the IT team?
-                </p>
-                <div className="flex gap-2 justify-center">
-                  <button
-                    onClick={createTicket}
-                    className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-medium transition-colors"
-                  >
-                    📧 Create Ticket
-                  </button>
-                  <button
-                    onClick={escalateToHuman}
-                    className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-medium transition-colors"
-                  >
-                    🗣️ Talk to IT
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
           <div ref={messagesEndRef} />
         </div>
       </main>
@@ -301,6 +281,24 @@ export function ChatInterface() {
           </div>
         </div>
       )}
+
+      {/* Mobile Support Buttons (visible on small screens) */}
+      <div className="relative z-10 px-4 py-2 border-t border-slate-700/50 bg-slate-900/80 sm:hidden">
+        <div className="max-w-4xl mx-auto flex gap-2 justify-center">
+          <button
+            onClick={createTicket}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/30 rounded-lg text-amber-300 text-xs font-medium transition-colors"
+          >
+            📧 Create Ticket
+          </button>
+          <button
+            onClick={escalateToHuman}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 rounded-lg text-teal-300 text-xs font-medium transition-colors"
+          >
+            🗣️ Talk to IT
+          </button>
+        </div>
+      </div>
 
       {/* Input */}
       <footer className="relative z-10 px-4 py-4 border-t border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
