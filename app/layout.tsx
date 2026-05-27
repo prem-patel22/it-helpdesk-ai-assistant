@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Script from "next/script"; // 1. Import the Script component
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -8,6 +8,10 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "IT Helpdesk AI Assistant",
   description: "AI-powered helpdesk",
+  icons: {
+    icon: "https://favicon.io/emoji-favicons/high-voltage/favicon.ico",
+    apple: "https://favicon.io/emoji-favicons/high-voltage/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -18,7 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* 2. Add the Apollo Script component here */}
+        <link
+          rel="icon"
+          type="image/x-icon"
+          href="https://favicon.io/emoji-favicons/high-voltage/favicon.ico"
+        />
+        <link
+          rel="apple-touch-icon"
+          href="https://favicon.io/emoji-favicons/high-voltage/apple-touch-icon.png"
+        />
         <Script
           id="apollo-tracking"
           strategy="afterInteractive"
