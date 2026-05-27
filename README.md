@@ -100,9 +100,8 @@ text
 
 ### Installation
 
-```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/it-helpdesk-ai-assistant.git
+git clone https://github.com/prem-patel22/it-helpdesk-ai-assistant.git
 
 # Navigate to project
 cd it-helpdesk-ai-assistant
