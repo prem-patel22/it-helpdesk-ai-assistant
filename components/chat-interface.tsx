@@ -42,7 +42,7 @@ export function ChatInterface() {
         "Connect with a human IT support agent?\n\nYou will be connected to our IT team. This may take 1–2 minutes."
       )
     ) {
-      window.location.href = "tel:+1234567890";
+      window.location.href = "tel:+918320504292";
     }
   };
 
