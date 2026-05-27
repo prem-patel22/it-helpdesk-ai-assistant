@@ -20,7 +20,7 @@ export const defaultBranding: BrandingConfig = {
   secondaryColor: "from-purple-600 to-pink-600",
   accentColor: "blue",
   welcomeMessage: "Hello! I'm your IT Helpdesk Assistant.",
-  supportEmail: "helpdesk@company.com",
+  supportEmail: "patelpremalpeshkumar@gmail.com",
   supportPhone: "+1-800-555-1234",
 };
 

@@ -31,7 +31,7 @@ export function ChatInterface() {
   }, [messages]);
 
   const createTicket = () => {
-    window.location.href = `mailto:helpdesk@company.com?subject=IT Ticket: ${encodeURIComponent(
+    window.location.href = `mailto:patelpremalpeshkumar@gmail.com?subject=IT Ticket: ${encodeURIComponent(
       lastQuestion
     )}&body=User asked: ${encodeURIComponent(lastQuestion)}%0A%0AAI couldn't answer this question.%0A%0APlease assist.%0A%0A---%0AAutomatically generated from IT Helpdesk AI`;
   };
