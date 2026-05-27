@@ -192,7 +192,7 @@ export default function HomePage() {
             🚀 Try Live Demo
           </Link>
           <a
-            href="mailto:your-email@gmail.com?subject=IT%20Helpdesk%20AI%20Pilot%20Request"
+            href="mailto:patelpremalpeshkumar@gmail.com?subject=IT%20Helpdesk%20AI%20Pilot%20Request"
             className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-600/50 text-slate-200 font-semibold px-8 py-3.5 rounded-xl transition-all duration-200 hover:-translate-y-0.5"
           >
             📧 Contact Sales
@@ -387,7 +387,7 @@ export default function HomePage() {
                   </li>
                 ))}
               </ul>
-              <a href="mailto:your-email@gmail.com?subject=Small%20Business%20Plan" className="block w-full text-center bg-white text-teal-700 hover:bg-teal-50 font-bold py-3 rounded-xl text-sm transition-colors shadow-md">
+              <a href="mailto:patelpremalpeshkumar@gmail.com?subject=Small%20Business%20Plan" className="block w-full text-center bg-white text-teal-700 hover:bg-teal-50 font-bold py-3 rounded-xl text-sm transition-colors shadow-md">
                 Get Started →
               </a>
             </div>
@@ -406,7 +406,7 @@ export default function HomePage() {
                   </li>
                 ))}
               </ul>
-              <a href="mailto:your-email@gmail.com?subject=Enterprise%20Plan" className="block w-full text-center border border-teal-500/40 text-teal-300 hover:bg-teal-500/10 font-semibold py-3 rounded-xl text-sm transition-colors">
+              <a href="mailto:patelpremalpeshkumar@gmail.com?subject=Enterprise%20Plan" className="block w-full text-center border border-teal-500/40 text-teal-300 hover:bg-teal-500/10 font-semibold py-3 rounded-xl text-sm transition-colors">
                 Talk to Sales →
               </a>
             </div>
@@ -425,7 +425,7 @@ export default function HomePage() {
             Get a free 90-day pilot. No credit card required. Full features from day one.
           </p>
           <a
-            href="mailto:your-email@gmail.com?subject=IT%20Helpdesk%20AI%20Pilot%20Request"
+            href="mailto:patelpremalpeshkumar@gmail.com?subject=IT%20Helpdesk%20AI%20Pilot%20Request"
             className="inline-block bg-white text-teal-700 font-bold px-8 py-3.5 rounded-xl hover:-translate-y-0.5 transition-all duration-200 shadow-md text-sm"
           >
             📧 Request Your Free Pilot →
