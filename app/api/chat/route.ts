@@ -92,7 +92,7 @@ function formatResponse(content: string, emoji: string): string {
   // Trim extra whitespace
   cleanContent = cleanContent.trim();
   
-  return `${emoji} **${cleanContent}\n\n---\n\nNeed more help? Contact IT: helpdesk@company.com`;
+  return `${emoji} **${cleanContent}\n\n---\n\nNeed more help? Contact IT: patelpremalpeshkumar@gmail.com`;
 }
 
 function getMenu(): string {

@@ -42,7 +42,6 @@ function ParticleField() {
         if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
       });
-      // draw faint connecting lines
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
@@ -199,24 +198,35 @@ export default function HomePage() {
           </a>
         </div>
 
-        {/* Stats */}
+        {/* ── Stats (updated: 4 cards, Indian market values) ── */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { target: 70,  suffix: "%",  label: "L1 tickets automated" },
-            { target: 126, suffix: "k",  label: "Avg annual savings ($)" },
-            { target: 24,  suffix: "/7", label: "Always available" },
-            { target: 10,  suffix: "s",  label: "Avg response time" },
-          ].map(({ target, suffix, label }) => (
-            <TiltCard
-              key={label}
-              className="bg-slate-900/80 border border-slate-700/50 rounded-2xl p-5 cursor-default"
-            >
-              <div className="text-3xl font-bold text-teal-400 leading-none mb-1">
-                {suffix === "/7" ? "24/7" : suffix === "s" ? "<10s" : <><CountUp target={target} />{suffix}</>}
-              </div>
-              <div className="text-xs text-slate-500 font-medium">{label}</div>
-            </TiltCard>
-          ))}
+          <TiltCard className="bg-slate-900/80 border border-slate-700/50 rounded-2xl p-5 cursor-default">
+            <div className="text-3xl font-bold text-teal-400 leading-none mb-1">
+              <CountUp target={70} />%
+            </div>
+            <div className="text-xs text-slate-500 font-medium">Reduction in L1 tickets</div>
+          </TiltCard>
+
+          <TiltCard className="bg-slate-900/80 border border-slate-700/50 rounded-2xl p-5 cursor-default">
+            <div className="text-3xl font-bold text-teal-400 leading-none mb-1">
+              <CountUp target={90} />%
+            </div>
+            <div className="text-xs text-slate-500 font-medium">Faster resolution time</div>
+          </TiltCard>
+
+          <TiltCard className="bg-slate-900/80 border border-slate-700/50 rounded-2xl p-5 cursor-default">
+            <div className="text-3xl font-bold text-teal-400 leading-none mb-1">
+              ₹3–4L
+            </div>
+            <div className="text-xs text-slate-500 font-medium">Annual savings (50 employees)</div>
+          </TiltCard>
+
+          <TiltCard className="bg-slate-900/80 border border-slate-700/50 rounded-2xl p-5 cursor-default">
+            <div className="text-3xl font-bold text-teal-400 leading-none mb-1">
+              2x
+            </div>
+            <div className="text-xs text-slate-500 font-medium">ROI in Year 1</div>
+          </TiltCard>
         </div>
       </section>
 
@@ -411,6 +421,14 @@ export default function HomePage() {
               </a>
             </div>
           </TiltCard>
+        </div>
+
+        {/* ── ROI Disclaimer ── */}
+        <div className="max-w-2xl mx-auto text-center mt-8">
+          <p className="text-xs text-slate-500">
+            *Based on Indian IT support engineer salary of ₹6–8 lakhs/year.
+            Your actual savings may vary based on team size and ticket volume.
+          </p>
         </div>
       </section>
 

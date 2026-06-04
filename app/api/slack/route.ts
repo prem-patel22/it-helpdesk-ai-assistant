@@ -40,7 +40,7 @@ function getSlackResponse(question: string): string {
   
   // Password Reset
   if (q.includes("password") || q.includes("reset") || q.includes("forgot")) {
-    return "🔐 *Password Reset Steps:*\n\n1. Go to https://password.company-portal.com\n2. Click 'Forgot Password'\n3. Enter your Employee ID\n4. Check email for reset link\n5. Create new password (8+ chars, 1 uppercase, 1 number)\n\nNeed help? Contact IT: helpdesk@company.com";
+    return "🔐 *Password Reset Steps:*\n\n1. Go to https://password.company-portal.com\n2. Click 'Forgot Password'\n3. Enter your Employee ID\n4. Check email for reset link\n5. Create new password (8+ chars, 1 uppercase, 1 number)\n\nNeed help? Contact IT: patelpremalpeshkumar@gmail.com";
   }
   
   // VPN Issues
